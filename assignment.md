@@ -14,8 +14,12 @@ Using the `claim` and `car` tables, write a SQL query to return a table containi
 
 Answer:
 
-```sql
-
+```
+SELECT 
+cl.id, cl.claim_date, cl.travel_time, cl.claim_amt,
+c.car_type, c.car_use
+FROM claim cl
+INNER JOIN car c ON cl.car_id = c.id;
 ```
 
 ### Question 2
@@ -24,8 +28,13 @@ Write a SQL query to compute the running total of the `travel_time` column for e
 
 Answer:
 
-```sql
-
+```
+SELECT 
+    id, 
+    car_id, 
+    travel_time, 
+    SUM(travel_time) OVER (PARTITION BY car_id ORDER BY id) AS running_total
+FROM claim;
 ```
 
 ### Question 3
