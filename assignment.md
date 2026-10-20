@@ -43,8 +43,21 @@ Using a Common Table Expression (CTE), write a SQL query to return a table conta
 
 Answer:
 
-```sql
-
+```
+WITH avg_car_resale AS (
+    SELECT 
+        car_use, 
+        AVG(resale_value) AS avg_resale_value
+    FROM car
+    GROUP BY car_use
+)
+SELECT 
+    c.id, 
+    c.resale_value, 
+    c.car_use
+FROM car c
+JOIN avg_car_resale a ON c.car_use = a.car_use
+WHERE c.resale_value < a.avg_resale_value;
 ```
 
 # **Level Up: The Insurance Auditor Project**
@@ -66,13 +79,79 @@ Answer:
 Before writing any CTEs, answer these questions by running simple queries:
 
 - How many unique `car_type` values are in the `car` table? (`SELECT DISTINCT car_type FROM car`)
+```
+SELECT DISTINCT car_type FROM car;
+
+Van
+SUV
+Minivan
+Pickup
+Panel Truck
+Sports Car
+```
 - How many unique `state` values are in the `address` table?
+```
+SELECT DISTINCT state FROM address;
+
+Arizona
+Maryland
+Kansas
+New Mexico
+Georgia
+Delaware
+Massachusetts
+District of Columbia
+Louisiana
+Washington
+Connecticut
+Montana
+Minnesota
+Mississippi
+South Dakota
+Wyoming
+Nevada
+New Hampshire
+California
+Virginia
+North Carolina
+Hawaii
+Illinois
+New York
+Colorado
+Michigan
+Iowa
+Kentucky
+Wisconsin
+Texas
+Tennessee
+Florida
+South Carolina
+Nebraska
+Ohio
+West Virginia
+Oregon
+Oklahoma
+New Jersey
+Alabama
+North Dakota
+Rhode Island
+Pennsylvania
+Indiana
+Missouri
+Utah
+Arkansas
+Alaska
+Idaho
+```
 - Do all clients have an address? (`SELECT COUNT(*) FROM client LEFT JOIN address ON client.address_id = address.id WHERE address.id IS NULL`)
 
-Write those queries here:
+```
+SELECT COUNT(*) 
+FROM client 
+LEFT JOIN address ON client.address_id = address.id 
+WHERE address.id IS NULL;
 
-```sql
--- Your exploration queries
+Count is 0, every client has an address that is not NULL.
 ```
 
 ---
