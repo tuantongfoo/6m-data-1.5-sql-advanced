@@ -162,8 +162,14 @@ Count is 0, every client has an address that is not NULL.
 
 Write a query (no CTE yet) that joins `claim` and `car`, and adds a column `avg_claim_by_car_type` using a window function:
 
-```sql
--- Step 2: Your query here
+```
+SELECT 
+    cl.id,
+    cl.claim_amt,
+    c.car_type,
+    AVG(cl.claim_amt) OVER (PARTITION BY c.car_type) AS avg_claim_by_car_type
+FROM claim cl
+INNER JOIN car c ON cl.car_id = c.id;
 ```
 
 <details>
