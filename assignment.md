@@ -199,17 +199,25 @@ The catch: we can't do this in the same step as Step 2, because Step 2 uses a wi
 
 Wrap your Step 2 query in a CTE called `market_comparison`, then write a second CTE called `client_totals` that groups by `client_id` and sums `claim_amt`:
 
-```sql
--- Step 3: Your query here
+```
 WITH market_comparison AS (
-    -- paste Step 2 query here
+    -- Step 2: Individual claims with car type market averages
+    SELECT 
+        cl.id,
+        cl.client_id,
+        cl.claim_amt,
+        c.car_type,
+        AVG(cl.claim_amt) OVER (PARTITION BY c.car_type) AS avg_claim_by_car_type
+    FROM claim cl
+    INNER JOIN car c ON cl.car_id = c.id
 ),
 client_totals AS (
-    SELECT client_id, SUM(claim_amt) AS total_claimed
+    -- Step 3: Aggregate total claimed per client
+    SELECT client_id, car_type, SUM(claim_amt) AS total_claimed
     FROM market_comparison
-    GROUP BY client_id
+    GROUP BY client_id, car_type
 )
-SELECT * FROM client_totals LIMIT 10;
+SELECT * FROM client_totals;
 ```
 
 <details>
