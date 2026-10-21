@@ -300,7 +300,7 @@ ORDER BY state, state_rank;
 ---
 
 **Submission:** Assemble all four CTEs into one script, save it as a `.sql` file with comments on each CTE explaining *why* it exists (not just what it does). Share in **#peer-reviews** on Discord, or keep it in your own notes if self-studying.
-~~~
+```
 WITH market_comparison AS (
     -- Step 2: Individual claims with car type market averages
     SELECT 
