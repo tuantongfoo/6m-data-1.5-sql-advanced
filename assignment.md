@@ -300,7 +300,51 @@ ORDER BY state, state_rank;
 ---
 
 **Submission:** Assemble all four CTEs into one script, save it as a `.sql` file with comments on each CTE explaining *why* it exists (not just what it does). Share in **#peer-reviews** on Discord, or keep it in your own notes if self-studying.
-
+~~~
+WITH market_comparison AS (
+    -- Step 2: Individual claims with car type market averages
+    SELECT 
+        cl.id,
+        cl.client_id,
+        cl.claim_amt,
+        c.car_type,
+        AVG(cl.claim_amt) OVER (PARTITION BY c.car_type) AS avg_claim_by_car_type
+    FROM claim cl
+    INNER JOIN car c ON cl.car_id = c.id
+),
+client_totals AS (
+    -- Step 3: Aggregate total claimed per client
+    SELECT client_id, car_type, SUM(claim_amt) AS total_claimed
+    FROM market_comparison
+    GROUP BY client_id, car_type
+),
+-- Step 4: Add this CTE after client_totals
+client_details AS (
+    SELECT
+        cl.first_name || ' ' || cl.last_name AS client_name,
+        a.state,
+        ct.car_type,
+        ct.total_claimed
+    FROM client_totals ct
+    INNER JOIN client cl ON ct.client_id = cl.id
+    INNER JOIN address a ON cl.address_id = a.id
+),
+-- Step 5: Complete query
+ranked_clients AS (
+    SELECT *,
+        RANK() OVER (PARTITION BY state ORDER BY total_claimed DESC) AS state_rank
+    FROM client_details
+)
+SELECT
+    client_name AS "Client Name",
+    state       AS "State",
+    car_type    AS "Car Type",
+    ROUND(total_claimed, 2) AS "Total Claimed",
+    state_rank  AS "State Rank"
+FROM ranked_clients
+WHERE state_rank <= 2
+ORDER BY state, state_rank;
+```
 ---
 
 ## **✅ Solutions**
